@@ -21,8 +21,8 @@ if __name__ == "__main__":
             access_token = account["access_token"]
     except Exception as e:
         print("账户信息读取失败，请重新输入")
-        idserial = input("请输入学号: ")
-        servicehall = input("请输入访问令牌: ")
+        userid = input("请输入学号: ")
+        access_token = input("请输入访问令牌: ")
         with open("config.json", "w", encoding='utf-8') as f:
             json.dump({"userid": userid, "access_token": access_token}, f, indent=4)
     
@@ -32,16 +32,24 @@ if __name__ == "__main__":
         "userid": userid,
         "access_token": access_token
     }
+
+    print(cookie)
+
     response = requests.post(url, cookies=cookie)
+    print(response.status_code)
+    print(response.text)
+
     soup = BeautifulSoup(response.text, 'html.parser')
 
     links = soup.find_all('a')
 
-    max_page = None
+    max_page = 0
     for link in links:
         if 'class' in link.attrs and 'end' in link['class']:
             max_page = int(link['href'].split('p/')[1])
             break
+    
+    print(f"总共有{max_page}页数据")
 
     # 发送请求，得到所有数据
     reservations = {}
